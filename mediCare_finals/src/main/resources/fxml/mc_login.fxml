@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<Pane maxHeight="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="417.0" prefWidth="380.0" style="-fx-background-color: white;" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.appointments.controller.logIn">
+   <children>
+      <Pane layoutX="27.0" layoutY="192.0" prefHeight="200.0" prefWidth="200.0" />
+      <ImageView fitHeight="287.0" fitWidth="305.0" layoutX="47.0" layoutY="-21.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../pics/logo2.png" />
+         </image>
+      </ImageView>
+      <TextField fx:id="idnum_text" layoutX="55.0" layoutY="241.0" prefHeight="25.0" prefWidth="269.0" promptText="id number...." />
+      <Text layoutX="56.0" layoutY="234.0" strokeType="OUTSIDE" strokeWidth="0.0" text="ID NUMBER:">
+         <font>
+            <Font size="13.0" />
+         </font>
+      </Text>
+      <Text layoutX="56.0" layoutY="297.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Password:">
+         <font>
+            <Font size="13.0" />
+         </font>
+      </Text>
+      <Button layoutX="127.0" layoutY="344.0" mnemonicParsing="false" onAction="#logIN_button" prefHeight="25.0" prefWidth="110.0" text="Log In" />
+      <PasswordField fx:id="pass_text" layoutX="56.0" layoutY="300.0" prefHeight="25.0" prefWidth="269.0" promptText="password...." />
+   </children>
+</Pane>

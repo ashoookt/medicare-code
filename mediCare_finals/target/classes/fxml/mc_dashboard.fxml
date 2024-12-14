@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="572.0" prefWidth="1088.0" style="-fx-background-color: #8080FF;" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.appointments.controller.dashboard">
+   <children>
+      <Pane prefHeight="100.0" prefWidth="250.0" style="-fx-background-color: #000080;">
+         <children>
+            <Text fill="WHITE" layoutX="91.0" layoutY="68.0" strokeType="OUTSIDE" strokeWidth="0.0" text="mediCare">
+               <font>
+                  <Font size="28.0" />
+               </font>
+            </Text>
+            <ImageView fitHeight="150.0" fitWidth="200.0" layoutX="-16.0" layoutY="-5.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../pics/logo.png" />
+               </image>
+            </ImageView>
+         </children>
+      </Pane>
+      <Pane layoutY="100.0" prefHeight="474.0" prefWidth="250.0" style="-fx-background-color: #4040FF;">
+         <children>
+            <Pane fx:id="patientsPane_button" layoutX="25.0" layoutY="41.0" prefHeight="157.0" prefWidth="200.0" style="-fx-border-color: #000080;">
+               <children>
+                  <Text fill="WHITE" layoutX="58.0" layoutY="148.0" strokeType="OUTSIDE" strokeWidth="0.0" text="PATIENTS">
+                     <font>
+                        <Font name="Calibri Light" size="22.0" />
+                     </font>
+                  </Text>
+                  <ImageView fitHeight="139.0" fitWidth="124.0" layoutX="38.0" layoutY="2.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../pics/patients.png" />
+                     </image>
+                  </ImageView>
+               </children></Pane>
+            <Pane fx:id="medrecordsPane_button"  layoutX="25.0" layoutY="238.0" prefHeight="175.0" prefWidth="200.0" style="-fx-border-color: #000080;">
+               <children>
+                  <Text fill="WHITE" layoutX="15.0" layoutY="168.0" strokeType="OUTSIDE" strokeWidth="0.0" text="MEDICAL RECORDS">
+                     <font>
+                        <Font name="Calibri Light" size="22.0" />
+                     </font>
+                  </Text>
+                  <ImageView fitHeight="150.0" fitWidth="139.0" layoutX="31.0" layoutY="13.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../pics/medical%20records.png" />
+                     </image>
+                  </ImageView>
+               </children></Pane>
+            <Button layoutX="25.0" layoutY="436.0" mnemonicParsing="false" onAction="#logout_button" text="Log Out" />
+         </children></Pane>
+      <Pane fx:id="mc_patients" layoutX="250.0" layoutY="36.0" prefHeight="537.0" prefWidth="808.0">
+         <children>
+            <Pane prefHeight="157.0" prefWidth="808.0" style="-fx-background-color: #8080FF;">
+               <children>
+                  <TextField fx:id="pName" layoutX="14.0" layoutY="21.0" prefHeight="25.0" prefWidth="200.0" promptText="patient name...." />
+                  <Text fill="WHITE" layoutX="14.0" layoutY="18.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Patient name:">
+                     <font>
+                        <Font size="13.0" />
+                     </font>
+                  </Text>
+                  <TextField fx:id="pAddress" layoutX="18.0" layoutY="67.0" prefHeight="25.0" prefWidth="200.0" promptText="address..." />
+                  <Text fill="WHITE" layoutX="18.0" layoutY="65.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Address:">
+                     <font>
+                        <Font size="13.0" />
+                     </font>
+                  </Text>
+                  <TextField fx:id="pContacts" layoutX="227.0" layoutY="21.0" prefHeight="25.0" prefWidth="200.0" promptText="contact number..." />
+                  <Text fill="WHITE" layoutX="227.0" layoutY="18.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Contact number:">
+                     <font>
+                        <Font size="13.0" />
+                     </font>
+                  </Text>
+                  <TextField fx:id="pAge" layoutX="227.0" layoutY="67.0" prefHeight="25.0" prefWidth="200.0" promptText="age..." />
+                  <Text fill="WHITE" layoutX="227.0" layoutY="65.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Age:">
+                     <font>
+                        <Font size="13.0" />
+                     </font>
+                  </Text>
+                  <TextArea fx:id="pMedicals" layoutX="469.0" layoutY="29.0" prefHeight="100.0" prefWidth="308.0" promptText="past appointments, allergies, medicals..." />
+                  <Text fill="WHITE" layoutX="469.0" layoutY="19.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Medical History:">
+                     <font>
+                        <Font size="13.0" />
+                     </font>
+                  </Text>
+                  <RadioButton fx:id="pFemale" layoutX="35.0" layoutY="125.0" mnemonicParsing="false" text="Female" textFill="WHITE" />
+                  <RadioButton fx:id="pMale" layoutX="118.0" layoutY="125.0" mnemonicParsing="false" text="Male" textFill="WHITE" />
+                  <RadioButton fx:id="pOthers" layoutX="190.0" layoutY="125.0" mnemonicParsing="false" text="Others" textFill="WHITE" />
+                  <Text fill="WHITE" layoutX="20.0" layoutY="115.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Gender:">
+                     <font>
+                        <Font size="13.0" />
+                     </font>
+                  </Text>
+               </children>
+            </Pane>
+            <TableView fx:id="pTable" layoutY="157.0" prefHeight="308.0" prefWidth="808.0">
+              <columns>
+                <TableColumn fx:id="pNamecol" prefWidth="126.6666259765625" text="Name" />
+                  <TableColumn fx:id="pAddresscol" prefWidth="126.6666259765625" text="Address" />
+                  <TableColumn fx:id="pContactcol" prefWidth="126.6666259765625" text="Contact number" />
+                  <TableColumn fx:id="pAgecol" prefWidth="84.0" text="Age" />
+                  <TableColumn fx:id="pGendercol" prefWidth="84.66668701171875" text="Gender" />
+                  <TableColumn fx:id="pMedicalcol" prefWidth="258.66668701171875" text="Medical History" />
+              </columns>
+            </TableView>
+            <Button layoutX="14.0" layoutY="473.0" mnemonicParsing="false" onAction="#save_button" prefHeight="25.0" prefWidth="59.0" text="Save" />
+            <Button layoutX="87.0" layoutY="473.0" mnemonicParsing="false" onAction="#edit_button" prefHeight="25.0" prefWidth="59.0" text="Edit" />
+            <Button layoutX="157.0" layoutY="473.0" mnemonicParsing="false" onAction="#delete_button" prefHeight="25.0" prefWidth="59.0" text="Delete" />
+         </children>
+      </Pane>
+   </children>
+</Pane>
