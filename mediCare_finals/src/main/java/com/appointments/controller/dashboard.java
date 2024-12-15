@@ -1,6 +1,7 @@
 package com.appointments.controller;
 
 import com.appointments.DatabaseController;
+import com.appointments.model.medicalrecords_db;
 import com.appointments.model.medicare_db;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -17,6 +18,8 @@ import java.sql.Statement;
 
 
 public class dashboard {
+
+    //fxml for the patient page
     @FXML
     private TextField pName;
     @FXML
@@ -51,12 +54,41 @@ public class dashboard {
     private Pane mc_patients;
     @FXML
     private Pane patientsPane_button;
+    @FXML
+    private Button logoutButton;
+
+    //fxml for the medical records page
+    @FXML
+    private Pane mc_medrecs;
+    @FXML
+    private Pane medrecordsPane_button;
+    @FXML
+    private TextField docNameText;
+    @FXML
+    private TextField wardText;
+    @FXML
+    private TextArea medicText;
+    @FXML
+    private TextArea diagnoseText;
+    @FXML
+    private TableView<medicalrecords_db> mrTable;
+    @FXML
+    private TableColumn<medicalrecords_db, String> colPatientName;
+    @FXML
+    private TableColumn<medicalrecords_db, String> colDoctorName;
+    @FXML
+    private TableColumn<medicalrecords_db, String> colWard;
+    @FXML
+    private TableColumn<medicalrecords_db, String> colMedication;
+    @FXML
+    private TableColumn<medicalrecords_db, String> colDiagnosis;
 
     ToggleGroup genderGroup;
 
     private DatabaseController con;
 
     private ObservableList<medicare_db> patients = FXCollections.observableArrayList();
+    private ObservableList<medicalrecords_db> patientsRecord = FXCollections.observableArrayList();
 
     public void initialize() {
         con = new DatabaseController();
@@ -67,7 +99,7 @@ public class dashboard {
         pFemale.setToggleGroup(genderGroup);
         pOthers.setToggleGroup(genderGroup);
 
-        //table
+        //table for patient page
         pNamecol.setCellValueFactory(new PropertyValueFactory<>("patient_name"));
         pAgecol.setCellValueFactory(new PropertyValueFactory<>("patient_age"));
         pAddresscol.setCellValueFactory(new PropertyValueFactory<>("patient_address"));
@@ -75,19 +107,65 @@ public class dashboard {
         pMedicalcol.setCellValueFactory(new PropertyValueFactory<>("meds_history"));
         pGendercol.setCellValueFactory(new PropertyValueFactory<>("gender"));
 
+        //table for medical records page
+        colPatientName.setCellValueFactory(new PropertyValueFactory<>("patient_name"));
+        colDoctorName.setCellValueFactory(new PropertyValueFactory<>("doctor_name"));
+        colWard.setCellValueFactory(new PropertyValueFactory<>("ward"));
+        colMedication.setCellValueFactory(new PropertyValueFactory<>("medication"));
+        colDiagnosis.setCellValueFactory(new PropertyValueFactory<>("diagnosis"));
+
         //hiding the fist page first
         mc_patients.setVisible(false);
         mc_patients.setManaged(false);
 
-        //toggle button for the patient page
-        patientsPane_button.setOnMouseClicked(event -> {
-            if(mc_patients.isVisible()){
+        //hiding the second page
+        mc_medrecs.setVisible(false);
+        mc_medrecs.setManaged(false);
+
+        // Toggle button for the medical history page
+        medrecordsPane_button.setOnMouseClicked(event -> {
+            // If mc_patients is visible, hide it first
+            if (mc_patients.isVisible()) {
                 mc_patients.setVisible(false);
                 mc_patients.setManaged(false);
-            }else {
+            }
+
+            // Toggle visibility for mc_medrecs
+            if (mc_medrecs.isVisible()) {
+                mc_medrecs.setVisible(false);
+                mc_medrecs.setManaged(false);
+            } else {
+                mc_medrecs.setVisible(true);
+                mc_medrecs.setManaged(true);
+            }
+        });
+
+        // Toggle button for the patient page
+        patientsPane_button.setOnMouseClicked(event -> {
+            // If mc_medrecs is visible, hide it first
+            if (mc_medrecs.isVisible()) {
+                mc_medrecs.setVisible(false);
+                mc_medrecs.setManaged(false);
+            }
+
+            // Toggle visibility for mc_patients
+            if (mc_patients.isVisible()) {
+                mc_patients.setVisible(false);
+                mc_patients.setManaged(false);
+            } else {
                 mc_patients.setVisible(true);
                 mc_patients.setManaged(true);
             }
+        });
+
+        //zoom button effect for medical records button
+        medrecordsPane_button.setOnMouseEntered(event -> {
+           medrecordsPane_button.setScaleX(1.1);
+           medrecordsPane_button.setScaleY(1.1);
+        });
+        medrecordsPane_button.setOnMouseExited(event -> {
+            medrecordsPane_button.setScaleX(1.0);
+            medrecordsPane_button.setScaleY(1.0);
         });
 
         //zoom button effect for patients pane button
@@ -100,8 +178,19 @@ public class dashboard {
             patientsPane_button.setScaleY(1.0);
         });
 
+        //zoom effect for the logout button
+        logoutButton.setOnMouseEntered(event -> {
+            logoutButton.setScaleX(1.1); // Increase scale on hover
+            logoutButton.setScaleY(1.1);
+        });
+        logoutButton.setOnMouseExited(event -> {
+            logoutButton.setScaleX(1.0); // Reset scale on mouse exit
+            logoutButton.setScaleY(1.0);
+        });
+
         try {
             loadPatients();
+            loadPatientRecords();
         } catch (SQLException e) {
             JOptionPane.showMessageDialog(null, "Error loading data: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
             e.printStackTrace();
@@ -120,8 +209,9 @@ public class dashboard {
         }
     }
 
+    //table to load from sql to table of patients
     public void loadPatients() throws SQLException {
-        String sql = "select * from patients";
+        String sql = "select * from patientTabledb";
         Statement stmt = con.getConnection().createStatement();
         ResultSet rs = stmt.executeQuery(sql);
 
@@ -139,6 +229,29 @@ public class dashboard {
         pTable.setItems(patients);
     }
 
+    //table to load from sql to table of medical records
+    public void loadPatientRecords() throws SQLException {
+        // Clear the existing records to prevent duplicates
+        patientsRecord.clear();
+
+        String sql = "SELECT patient_name, doctor_name, ward, medication, diagnosis FROM patientsRecord";
+        Statement stmt = con.getConnection().createStatement();
+        ResultSet rs = stmt.executeQuery(sql);
+
+        while (rs.next()) {
+            medicalrecords_db mrd = new medicalrecords_db(
+                    rs.getString("patient_name"),
+                    rs.getString("doctor_name"),
+                    rs.getString("ward"),
+                    rs.getString("medication"),
+                    rs.getString("diagnosis")
+            );
+            patientsRecord.add(mrd);
+        }
+        mrTable.setItems(patientsRecord);
+    }
+
+
     @FXML
     private void save_button() throws SQLException {
         try {
@@ -148,7 +261,7 @@ public class dashboard {
             // If a patient is selected, update the existing patient
             if (selectedPatient != null) {
                 // SQL to update the selected patient's information in the database
-                String sql = "UPDATE patients SET patient_name = ?, patient_age = ?, patient_address = ?, patient_contacts = ?, meds_history = ?, gender = ? WHERE patient_name = ? AND patient_age = ?";
+                String sql = "UPDATE patientTabledb SET patient_name = ?, patient_age = ?, patient_address = ?, patient_contacts = ?, meds_history = ?, gender = ? WHERE patient_name = ? AND patient_age = ?";
                 PreparedStatement stmt = con.getConnection().prepareStatement(sql);
 
                 // Set the values from the text fields
@@ -158,8 +271,8 @@ public class dashboard {
                 stmt.setString(4, pContacts.getText());
                 stmt.setString(5, pMedicals.getText());
                 stmt.setString(6, getSelectedGender());
-                stmt.setString(7, selectedPatient.getPatient_name()); // Use the original name as identifier
-                stmt.setString(8, selectedPatient.getPatient_age()); // Use the original age as identifier
+                stmt.setString(7, selectedPatient.getPatient_name());
+                stmt.setString(8, selectedPatient.getPatient_age());
 
                 // Execute the update
                 stmt.executeUpdate();
@@ -175,10 +288,13 @@ public class dashboard {
                 // Refresh the table to reflect the updated patient information
                 pTable.refresh();
 
-                //deselect from the table
+                // Load the updated medical records from the database
+                loadPatientRecords();
+
+                // Deselect from the table
                 pTable.getSelectionModel().clearSelection();
 
-                //clear of texts
+                // Clear the text fields
                 pName.clear();
                 pAge.clear();
                 pAddress.clear();
@@ -186,12 +302,11 @@ public class dashboard {
                 pMedicals.clear();
                 genderGroup.selectToggle(null);
 
-                // Show a success message
                 JOptionPane.showMessageDialog(null, "Patient updated successfully", "Success", JOptionPane.INFORMATION_MESSAGE);
 
             } else {
                 // If no patient is selected, add a new patient
-                String sql = "INSERT INTO patients(patient_name, patient_age, patient_address, patient_contacts, meds_history, gender) VALUES(?, ?, ?, ?, ?, ?)";
+                String sql = "INSERT INTO patientTabledb(patient_name, patient_age, patient_address, patient_contacts, meds_history, gender) VALUES(?, ?, ?, ?, ?, ?)";
                 PreparedStatement stmt = con.getConnection().prepareStatement(sql);
 
                 stmt.setString(1, pName.getText());
@@ -200,10 +315,15 @@ public class dashboard {
                 stmt.setString(4, pContacts.getText());
                 stmt.setString(5, pMedicals.getText());
                 stmt.setString(6, getSelectedGender());
-
                 stmt.executeUpdate();
 
-                // Add to ObservableList
+                // Insert data into the medical records table
+                String sql2 = "INSERT INTO patientsrecord(patient_name) VALUES(?)";
+                PreparedStatement stmt2 = con.getConnection().prepareStatement(sql2);
+                stmt2.setString(1, pName.getText());
+                stmt2.executeUpdate();
+
+                // Add to ObservableList for patients table
                 medicare_db md = new medicare_db(
                         pName.getText(),
                         pAge.getText(),
@@ -214,10 +334,13 @@ public class dashboard {
                 );
                 patients.add(md);
 
-                // Refresh table view
+                // Refresh the patient table view
                 pTable.refresh();
 
-                //deselect from the table
+                // Load the updated medical records from the database
+                loadPatientRecords();
+
+                // Deselect from the table
                 pTable.getSelectionModel().clearSelection();
 
                 // Clear the fields after saving the new patient
@@ -239,9 +362,10 @@ public class dashboard {
 
 
 
+
     @FXML
     private void logout_button() throws SQLException {
-        // Confirm logout (optional)
+        // Confirm logout
         int confirmation = JOptionPane.showConfirmDialog(
                 null,
                 "Are you sure you want to log out? This will close the application.",
@@ -285,16 +409,33 @@ public class dashboard {
             );
 
             if (confirmation == JOptionPane.YES_OPTION) {
-                String sql = "DELETE FROM patients WHERE patient_name = ? AND patient_age = ?";
+                // Delete from patientTabledb
+                String sql = "DELETE FROM patientTabledb WHERE patient_name = ? AND patient_age = ?";
                 PreparedStatement stmt = con.getConnection().prepareStatement(sql);
-
                 stmt.setString(1, selectedPatient.getPatient_name());
                 stmt.setString(2, selectedPatient.getPatient_age());
 
                 int rowsAffected = stmt.executeUpdate();
+
                 if (rowsAffected > 0) {
+                    // Remove the patient from the ObservableList for the first page
                     patients.remove(selectedPatient);
                     pTable.refresh();
+
+                    // Also delete from patientsRecord table
+                    String sql2 = "DELETE FROM patientsRecord WHERE patient_name = ?";
+                    PreparedStatement stmt2 = con.getConnection().prepareStatement(sql2);
+                    stmt2.setString(1, selectedPatient.getPatient_name());
+                    stmt2.executeUpdate();
+
+                    // Remove the patient from the ObservableList for the second page
+                    patientsRecord.removeIf(record -> record.getPatient_name().equals(selectedPatient.getPatient_name()));
+                    mrTable.refresh();
+
+                    // Clear the selection
+                    pTable.getSelectionModel().clearSelection();
+                    mrTable.getSelectionModel().clearSelection();
+
                     JOptionPane.showMessageDialog(null, "Patient deleted successfully", "Success", JOptionPane.INFORMATION_MESSAGE);
                 } else {
                     JOptionPane.showMessageDialog(null, "Error: Patient not found in the database", "Error", JOptionPane.ERROR_MESSAGE);
@@ -315,7 +456,6 @@ public class dashboard {
         medicare_db selectedPatient = pTable.getSelectionModel().getSelectedItem();
 
         if (selectedPatient != null) {
-            // Populate the text fields with the selected patient's information
             pName.setText(selectedPatient.getPatient_name());
             pAge.setText(selectedPatient.getPatient_age());
             pAddress.setText(selectedPatient.getPatient_address());
@@ -335,10 +475,120 @@ public class dashboard {
                     break;
             }
         } else {
-            // Show a warning if no patient is selected
             JOptionPane.showMessageDialog(null, "Please select a patient to edit", "Warning", JOptionPane.WARNING_MESSAGE);
         }
     }
+    @FXML
+    private void mrSaveButton() {
+        try {
+            // Get the selected patient record from the table
+            medicalrecords_db selectedRecord = mrTable.getSelectionModel().getSelectedItem();
+
+            if (selectedRecord != null) {
+                // SQL to update the selected record
+                String sql = "UPDATE patientsRecord SET doctor_name = ?, ward = ?, medication = ?, diagnosis = ? WHERE patient_name = ?";
+                PreparedStatement stmt = con.getConnection().prepareStatement(sql);
+
+                // Set the values from the text fields
+                stmt.setString(1, docNameText.getText());
+                stmt.setString(2, wardText.getText());
+                stmt.setString(3, medicText.getText());
+                stmt.setString(4, diagnoseText.getText());
+                stmt.setString(5, selectedRecord.getPatient_name());
+
+                // Execute the update
+                stmt.executeUpdate();
+
+                // Update the existing record in the ObservableList
+                selectedRecord.setDoctor_name(docNameText.getText());
+                selectedRecord.setWard(wardText.getText());
+                selectedRecord.setMedication(medicText.getText());
+                selectedRecord.setDiagnosis(diagnoseText.getText());
+
+                // Refresh the table to reflect the updated record
+                mrTable.refresh();
+
+                // Clear the text fields
+                docNameText.clear();
+                wardText.clear();
+                medicText.clear();
+                diagnoseText.clear();
+
+                // Deselect the table
+                mrTable.getSelectionModel().clearSelection();
+
+                JOptionPane.showMessageDialog(null, "Record updated successfully", "Success", JOptionPane.INFORMATION_MESSAGE);
+            } else {
+                JOptionPane.showMessageDialog(null, "Please select a record to update", "Warning", JOptionPane.WARNING_MESSAGE);
+            }
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(null, "Database error: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Unexpected error: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
+        }
+    }
+
+    @FXML
+    private void mrDeleteButton() {
+        try {
+            medicalrecords_db selectedRecord = mrTable.getSelectionModel().getSelectedItem();
+
+            if (selectedRecord != null) {
+                int confirmation = JOptionPane.showConfirmDialog(
+                        null,
+                        "Are you sure you want to delete this record?",
+                        "Delete Confirmation",
+                        JOptionPane.YES_NO_OPTION,
+                        JOptionPane.QUESTION_MESSAGE
+                );
+
+                if (confirmation == JOptionPane.YES_OPTION) {
+                    // SQL to delete the selected record's associated details, excluding patient_name
+                    String sql = "UPDATE patientsRecord SET doctor_name = NULL, ward = NULL, medication = NULL, diagnosis = NULL WHERE patient_name = ?";
+                    PreparedStatement stmt = con.getConnection().prepareStatement(sql);
+
+                    stmt.setString(1, selectedRecord.getPatient_name());
+
+                    stmt.executeUpdate();
+
+                    selectedRecord.setDoctor_name(null);
+                    selectedRecord.setWard(null);
+                    selectedRecord.setMedication(null);
+                    selectedRecord.setDiagnosis(null);
+
+                    // Refresh the table to reflect changes
+                    mrTable.refresh();
+
+                    JOptionPane.showMessageDialog(null, "Record cleared successfully (patient_name retained)", "Success", JOptionPane.INFORMATION_MESSAGE);
+                }
+            } else {
+                JOptionPane.showMessageDialog(null, "Please select a record to clear", "Warning", JOptionPane.WARNING_MESSAGE);
+            }
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(null, "Database error: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Unexpected error: " + e.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
+        }
+    }
+    @FXML
+    private void mrEditButton() {
+        medicalrecords_db selectedRecord = mrTable.getSelectionModel().getSelectedItem();
+
+        if (selectedRecord != null) {
+            docNameText.setText(selectedRecord.getDoctor_name());
+            wardText.setText(selectedRecord.getWard());
+            medicText.setText(selectedRecord.getMedication());
+            diagnoseText.setText(selectedRecord.getDiagnosis());
+        } else {
+            JOptionPane.showMessageDialog(null, "Please select a record to edit", "Warning", JOptionPane.WARNING_MESSAGE);
+        }
+    }
+
+
 }
 
 

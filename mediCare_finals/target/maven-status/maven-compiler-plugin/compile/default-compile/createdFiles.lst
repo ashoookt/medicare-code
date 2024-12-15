@@ -1,3 +1,4 @@
 com\appointments\model\medicare_db.class
+com\appointments\model\medicalrecords_db.class
 com\appointments\controller\logIn.class
 com\appointments\controller\dashboard.class
